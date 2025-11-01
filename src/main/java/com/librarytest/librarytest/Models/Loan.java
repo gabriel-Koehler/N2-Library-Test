@@ -9,14 +9,21 @@ public class Loan {
     private LocalDateTime dateLoan;
     private LocalDateTime dateLoanExpired;
 
-    public Loan(Long id_loan, Long id_user, Long id_book, LocalDateTime dateLoan, LocalDateTime dateLoanExpired) {
+    public Loan(Long id_loan, Long id_user, Long id_book, LocalDateTime dateLoan) {
         this.id_loan = id_loan;
         this.id_user = id_user;
         this.id_book = id_book;
         this.dateLoan = dateLoan;
-        this.dateLoanExpired = dateLoanExpired;
+        this.dateLoanExpired = dateLoan.plusDays(15);
 
     }
+    public Loan(LocalDateTime dateLoan){
+        this.dateLoan = dateLoan;
+        this.dateLoanExpired = dateLoan.plusDays(15);
+    }
+
+
+
     public Long getId_loan() {
         return id_loan;
     }

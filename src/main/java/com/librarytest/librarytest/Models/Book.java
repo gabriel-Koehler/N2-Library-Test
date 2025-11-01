@@ -17,7 +17,9 @@ public class Book {
         this.numberOfPages = numberOfPages;
         this.dateThrow = dateThrow;
         this.author = author;
-
+    }
+    public Book(String title){
+        this.title=title;
     }
 
     public Long getId_book() {

@@ -1,27 +1,25 @@
 package com.librarytest.librarytest;
 
 import com.librarytest.librarytest.ConfigTests.ResultTestWatchers;
-import com.librarytest.librarytest.Services.ClockService;
-import org.junit.jupiter.api.BeforeAll;
+import com.librarytest.librarytest.Services.EmailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.time.LocalDateTime;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 
 @ExtendWith(ResultTestWatchers.class)
-public class ClockServiceTest {
-    private ClockService clockServiceStub;
+public class EmailServiceTest {
+    private EmailService emailService;
+
     @BeforeEach
     public void setUp(){
-        clockServiceStub=new ClockService();
+        emailService= new EmailService();
     }
 
     @Test
-    public void shouldReturnCurrentTime(){
-        assertEquals(LocalDateTime.now(),clockServiceStub.currentTime());
+    public void shouldSendEmail(){
+        assertEquals("Send Email Successeful",emailService.sendEmail("","",""));
     }
-
 }
