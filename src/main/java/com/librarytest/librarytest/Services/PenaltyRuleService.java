@@ -22,6 +22,6 @@ public class PenaltyRuleService {
             emailService.sendEmail(user.getEmail(),"Your Loan Date Expired" ,"Your loan of the book "+book.getTitle()+"is overdue. The fine is"+resultPenalty);
             return "Penalty is "+resultPenalty;
         }
-        return "The loan date has not yet expired.";
+        return "The loan date has not yet expired";
     }
 }
