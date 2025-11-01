@@ -39,7 +39,7 @@ public class PenaltyServiceTest {
         EmailService emailService= mock(EmailService.class) ;
         PenaltyRuleService penaltyRuleService=new PenaltyRuleService(emailService);
         penaltyRuleService.penalty(
-                LocalDateTime.of(2000,1,1,0,0),
+                LocalDateTime.of(2000,1,1,1,0),
                 new Loan(LocalDateTime.of(1999,1,1,1,1)),
                 new User(""),
                 new Book("")
@@ -51,8 +51,8 @@ public class PenaltyServiceTest {
     public void shouldPenaltyNotExpired(){
         EmailService emailService= mock(EmailService.class) ;
         PenaltyRuleService penaltyRuleService=new PenaltyRuleService(emailService);
-        assertEquals("The loan date has not yet expired.", penaltyRuleService.penalty(
-                LocalDateTime.of(2000,1,1,0,0),
+        assertEquals("The loan date has not yet expired", penaltyRuleService.penalty(
+                LocalDateTime.of(1998,1,1,0,0),
                 new Loan(LocalDateTime.of(1999,1,1,1,1)),
                 new User(""),
                 new Book("")
