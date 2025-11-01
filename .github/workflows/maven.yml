@@ -10,9 +10,9 @@ name: Run Tests and Generate JaCoCo Report
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, tests ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, tests ]
 
 jobs:
   test:
