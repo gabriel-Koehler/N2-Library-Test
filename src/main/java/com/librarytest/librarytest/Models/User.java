@@ -1,5 +1,7 @@
 package com.librarytest.librarytest.Models;
 
+import java.security.PublicKey;
+
 public class User {
 
     private Long id_user;
@@ -10,6 +12,13 @@ public class User {
         this.id_user=id_user;
         this.email=email;
         this.name=name;
+    }
+    public User(String email){
+        this.email=email;
+    }
+    public User(Long id_user,String email){
+        this.email=email;
+        this.id_user=id_user;
     }
 
 
