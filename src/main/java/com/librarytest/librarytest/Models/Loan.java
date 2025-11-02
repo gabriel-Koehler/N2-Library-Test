@@ -4,6 +4,7 @@ import com.librarytest.librarytest.Repository.InMemoryLoanRepository;
 import com.librarytest.librarytest.Services.EmailService;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
 public class Loan {
@@ -21,6 +22,14 @@ public class Loan {
         this.dateLoanExpired = dateLoan.plusDays(15);
 
     }
+
+    public Loan(Long id_user, Long id_book, LocalDateTime dateLoan) {
+        this.id_user = id_user;
+        this.id_book = id_book;
+        this.dateLoan = dateLoan;
+        this.dateLoanExpired = dateLoan.plusDays(15);
+    }
+
     public Loan(LocalDateTime dateLoan){
         this.dateLoan = dateLoan;
         this.dateLoanExpired = dateLoan.plusDays(15);
@@ -33,12 +42,13 @@ public class Loan {
             Book book,
             EmailService emailService
     ) {
-        if(emailService==null){
+        if(emailService==null || user==null || currentTime==null){
             throw new NullPointerException();
         }
         if (currentTime.isAfter(this.getDateLoanExpired())) {
             double resultPenalty = 0.0;
-
+            long differenceDays = ChronoUnit.DAYS.between(this.getDateLoanExpired(),currentTime);
+            resultPenalty= differenceDays*0.50;
                 emailService.sendEmail(user.getEmail(), "Your Loan Date Expired", "Your loan of the book " + book.getTitle() + "is overdue. The fine is " + resultPenalty);
                 return "Penalty is " + resultPenalty;
 
@@ -49,7 +59,10 @@ public class Loan {
     static public String makeALoan(InMemoryLoanRepository repo, User lendingUser, Book lendingBook,LocalDateTime loanDate, EmailService emailService){
         ArrayList<Loan> loansLendingUser =new ArrayList<>(repo.findByUser(lendingUser.getId_user()));
         if(loansLendingUser.size()<3 && loansLendingUser.size()>=0){
-            emailService.sendEmail(lendingUser.getEmail(),"Loan of "+lendingBook.getTitle(),"You borrowed the book "+0+" \n Return date:"+0);
+            Loan newLoan=new Loan(lendingUser.getId_user(), lendingBook.getId_book(),loanDate);
+            repo.save(newLoan);
+            emailService.sendEmail(lendingUser.getEmail(),"Loan of "+lendingBook.getTitle(),"You borrowed the book "+ lendingBook.getTitle()+
+                    " \n Return date:"+newLoan.getDateLoanExpired().getMonthValue()+"/"+newLoan.getDateLoanExpired().getDayOfMonth()+"/"+newLoan.getDateLoanExpired().getYear());
             return "Loan Successeful";
         }else{
             return "Loan Failed";

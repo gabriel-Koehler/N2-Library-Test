@@ -17,6 +17,10 @@ public class InMemoryLoanRepository {
     public List<Loan> findByUser(Long id_user){
         return loans.values().stream().filter((e)-> e.getId_user().equals(id_user)).toList();
     }
+    public void save(Loan loan){
+        loan.setId_loan(loans.size()+1L);
+        loans.put(loan.getId_loan(),loan);
+    }
 
     public InMemoryLoanRepository(){
         loans.put(1L,new Loan(1L, 1L, 1L, LocalDateTime.of(2025,9,12,0,0)));
@@ -47,7 +51,7 @@ public class InMemoryLoanRepository {
 
         loans.put(14L,new Loan(14L, 3L, 14L, LocalDateTime.of(2025,9,12,0,0)));
 
-        loans.put(15L,new Loan(14L, 4L, 15L, LocalDateTime.of(2025,9,12,0,0)));
+        loans.put(15L,new Loan(15L, 4L, 15L, LocalDateTime.of(2025,9,12,0,0)));
 
     }
 }
