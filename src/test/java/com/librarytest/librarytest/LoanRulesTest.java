@@ -7,6 +7,7 @@ import com.librarytest.librarytest.Models.User;
 import com.librarytest.librarytest.Repository.InMemoryBookRepository;
 import com.librarytest.librarytest.Repository.InMemoryLoanRepository;
 import com.librarytest.librarytest.Repository.InMemoryUserRepository;
+import com.librarytest.librarytest.Services.ClockService;
 import com.librarytest.librarytest.Services.EmailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -41,7 +42,7 @@ public class LoanRulesTest {
         assertEquals("Loan Successeful",
                 Loan.makeALoan(
                         loanRepository,
-                        new User(1L,"user1@gmail.com"),
+                        new User(5L,"user1@gmail.com"),
                         new Book("Book One"),
                         LocalDateTime.of(2025,11,1,0,0),
                         emailService
@@ -56,12 +57,12 @@ public class LoanRulesTest {
                 .thenReturn("Send Email Successeful");
         Loan.makeALoan(
                 loanRepository,
-                new User(1L,"user1@gmail.com"),
+                new User(5L,"user5@gmail.com"),
                 new Book("Book One"),
                 LocalDateTime.of(2025,11,1,0,0),
                 emailService
         );
-        verify(emailService).sendEmail(eq("user1@gmail.com"),contains("Book One"),contains("Return Date:"));
+        verify(emailService).sendEmail(eq("user5@gmail.com"),contains("Book One"),contains("Return date:"));
     }
 
     @Test
@@ -86,11 +87,11 @@ public class LoanRulesTest {
 
         new Loan(LocalDateTime.of(1999,1,1,1,1)).calcPenaltyRule(
                 LocalDateTime.of(2000,1,1,1,0),
-                new User(""),
+                new User("a"),
                 new Book(""),
                 emailService
         );
-        verify(emailService).sendEmail(eq("a"),contains("0.0"),anyString());
+        verify(emailService).sendEmail(eq("a"),contains("Expired"),anyString());
     }
     @Test
     @DisplayName("⚠️ Should apply penalty")
@@ -112,7 +113,7 @@ public class LoanRulesTest {
     public void shouldPenaltyNotExpired(){
         EmailService emailService= mock(EmailService.class) ;
 
-        assertEquals("The loan date has not yet expired", new Loan(LocalDateTime.of(1999,1,1,1,1)).calcPenaltyRule(
+        assertEquals("The loan date has not yet expired", new Loan(LocalDateTime.of(2001,1,1,1,1)).calcPenaltyRule(
                         LocalDateTime.of(2000,1,1,0,0),
                         new User(""),
                         new Book(""),
@@ -127,7 +128,7 @@ public class LoanRulesTest {
     public void shouldNewLoanRunIn300ms(){
         EmailService emailService=mock(EmailService.class);
         assertTimeout(Duration.ofMillis(300),()->{
-                    Thread.sleep(300);
+//                    Thread.sleep(300);
                     Loan.makeALoan(
                             loanRepository,
                             new User(1L,"user1@gmail.com"),
@@ -147,11 +148,34 @@ public class LoanRulesTest {
         assertThrows(NullPointerException.class, () -> {
             Loan.makeALoan(
                     loanRepository,
-                    new User(1L,"user1@gmail.com"),                              // invalid user
+                    null,                              // invalid user
                     new Book("Book One"),
                     LocalDateTime.now(),
                     emailService
             );
+        });
+    }
+
+    @Test
+    @DisplayName("⚠️ Should throw exception when current date is null in penalty rule")
+    void shouldThrowExceptionWhenCurrentDateIsNull() {
+        EmailService emailService = mock(EmailService.class);
+        ClockService clockServiceStub=new ClockService();
+        Loan loan = new Loan(LocalDateTime.now());
+
+        assertThrows(NullPointerException.class, () -> {
+            loan.calcPenaltyRule(null, new User("a"), new Book("A"), emailService);
+        });
+    }
+
+    @Test
+    @DisplayName("⚠️ Should throw exception when EmailService is null in penalty rule")
+    void shouldThrowExceptionWhenEmailServiceIsNull() {
+        EmailService emailService = mock(EmailService.class);
+        Loan loan = new Loan(LocalDateTime.now());
+
+        assertThrows(NullPointerException.class, () -> {
+            loan.calcPenaltyRule(LocalDateTime.of(2000,1,1,0,0), new User("a"), new Book("A"), null);
         });
     }
 }

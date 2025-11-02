@@ -20,6 +20,6 @@ public class EmailServiceTest {
 
     @Test
     public void shouldSendEmail(){
-        assertEquals("Send Email Successeful",emailService.sendEmail("","",""));
+        assertEquals("Send Email Successeful",emailService.sendEmail("a","a","a"));
     }
 }

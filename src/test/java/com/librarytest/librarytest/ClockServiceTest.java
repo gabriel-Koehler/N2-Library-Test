@@ -20,7 +20,11 @@ public class ClockServiceTest {
 
     @Test
     public void shouldReturnCurrentTime(){
-        assertEquals(LocalDateTime.now(),clockServiceStub.currentTime());
+        assertEquals(LocalDateTime.now().getDayOfMonth(),clockServiceStub.currentTime().getDayOfMonth());
+        assertEquals(LocalDateTime.now().getMonth(),clockServiceStub.currentTime().getMonth());
+        assertEquals(LocalDateTime.now().getYear(),clockServiceStub.currentTime().getYear());
+        assertEquals(LocalDateTime.now().getHour(),clockServiceStub.currentTime().getHour());
+        assertEquals(LocalDateTime.now().getMinute(),clockServiceStub.currentTime().getMinute());
     }
 
 }
