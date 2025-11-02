@@ -44,7 +44,7 @@ public class Loan {
     static public String makeALoan(InMemoryLoanRepository repo, User lendingUser, Book lendingBook,LocalDateTime loanDate, EmailService emailService){
         ArrayList<Loan> loansLendingUser =new ArrayList<>(repo.findByUser(lendingUser.getId_user()));
         if(loansLendingUser.size()<3 && loansLendingUser.size()>=0){
-            emailService.sendEmail(lendingUser.getEmail(),"Loan of "+lendingBook.getTitle(),"You borrowed the book"+0+" \n Return date:"+0);
+            emailService.sendEmail(lendingUser.getEmail(),"Loan of "+lendingBook.getTitle(),"You borrowed the book "+0+" \n Return date:"+0);
             return "Loan Successeful";
         }else{
             return "Loan Failed";
