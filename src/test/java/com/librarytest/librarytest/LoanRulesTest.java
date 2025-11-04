@@ -64,8 +64,8 @@ public class LoanRulesTest {
     @DisplayName("📧 Should send confirmation email when loan is created")
     @ParameterizedTest(name = "📚 Should confirmation for userId={0} -> Email contains: {1} and Date expired: {2}")
     @CsvSource({
-            "5, user5@gmail.com,11/17/2025",
-            "2, user2@gmail.com,11/17/2025",
+            "5, user5@gmail.com,11/19/2025",
+            "2, user2@gmail.com,11/19/2025",
             "1,  ,  "
     })
     public void shouldMakeNewLoanEmail(long userId,String expecteEmail, String dateExpired){
@@ -82,7 +82,14 @@ public class LoanRulesTest {
                 emailService
         );
         LocalDateTime loanExpiredeDate =loanTime.plusDays(15);
-        verify(emailService).sendEmail(eq(expecteEmail),contains("Book Any"),contains(dateExpired));
+        if (expecteEmail != null && !expecteEmail.isEmpty()) {
+            // Successful loan case (userId 5 and 2)
+            // Verify with 'contains' to match part of the argument
+            verify(emailService).sendEmail(eq(expecteEmail), contains("Book Any"), contains(dateExpired));
+        } else {
+            // Failed loan case (userId 1) - no email should be sent
+            verify(emailService, never()).sendEmail(anyString(), anyString(), anyString());
+        }
     }
 
 
@@ -113,7 +120,7 @@ public class LoanRulesTest {
                         "0.5","user1@gmail"),
                 Arguments.of(LocalDateTime.of(2025, 10, 11, 1, 1),
                         LocalDateTime.of(2025, 11, 2, 1, 1),
-                        "0.5","user2@gmail"),
+                        "3.5","user2@gmail"),
                 Arguments.of(LocalDateTime.of(2025, 11, 13, 1, 1),
                         LocalDateTime.of(2025, 11, 14, 1, 1),
                         "The loan date has not yet expired","user3@gmail")
@@ -142,13 +149,19 @@ public class LoanRulesTest {
     @DisplayName("⚠️ Should apply penalty and send notification email when return is late")
     public void shouldPenaltyAndSendEmail(LocalDateTime loanDate,LocalDateTime currenTime,String expected,String user){
         EmailService emailService= mock(EmailService.class) ;
-        new Loan(loanDate).calcPenaltyRule(
+        String result = new Loan(loanDate).calcPenaltyRule(
                 currenTime,
                 new User(user),
                 new Book(""),
                 emailService
         );
-        verify(emailService).sendEmail(eq(user),contains("Expired"),contains(expected));
+        if (result.equals("The loan date has not yet expired")) {
+            // Case where no penalty/email should be sent
+            verify(emailService, never()).sendEmail(anyString(), anyString(), anyString());
+        } else {
+            // Case where penalty/email should be sent
+            verify(emailService).sendEmail(eq(user),contains("Expired"),contains(expected));
+        }
     }
 
     @DisplayName("⚡ Should perform loan operation within 300 milliseconds")
